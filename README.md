@@ -13,8 +13,11 @@ QuantumProof's testnet resets often, and a validator that stays registered while
   - 🔄 chain reset detected
   - 📈 / 📉 leaderboard rank changes, with the gap to the validators above and below you
   - 📊 a daily report: rank, points gained in 24 h, uptime %, restarts, resets, blocks proposed and attested
-  - 🆕 the official `qpf-node.js` changed on the site (never installed automatically)
+  - 🗓 a weekly recap on Mondays: points per day as a mini chart, rank trend, average uptime
+  - 💤 your computer went to sleep (lid closed), and for how long
+  - 🆕 the official `qpf-node.js` changed on the site, with a review summary: new websites it contacts, new modules, new file or shell access. The new version is saved as `~/qpf/qpf-node.new.js` for you to check; it is never run or installed automatically
 - **Tamper check.** The keeper fingerprints `qpf-node.js` and refuses to run it if it changes on your computer.
+- **Status in one command:** `node ~/qpf/qpf-keeper.js --status` shows rank, points, online state and today's uptime.
 - **Log cleanup.** `node.log` is cleared once it passes 5 MB.
 
 ## Requirements
@@ -57,7 +60,7 @@ Stops the keeper, leaves the validator set cleanly so you are not penalised, and
 | `summaryHour` | `9` | Hour (local time) for the daily report |
 | `restartAfterSec` | `60` | Restart the node after this many seconds without a signature |
 | `alertAfterSec` | `180` | Send the offline alert after this long |
-| `rankAlerts`, `missAlerts`, `resetAlerts`, `updateWatch` | `true` | Turn individual alerts off with `false` |
+| `rankAlerts`, `missAlerts`, `resetAlerts`, `updateWatch`, `sleepAlerts`, `weeklyReport` | `true` | Turn individual alerts off with `false` |
 | `maxLogMB` | `5` | Clear `node.log` above this size |
 
 After editing, restart:
@@ -69,7 +72,7 @@ After editing, restart:
 - Everything lives in `~/qpf` plus one startup file: `~/Library/LaunchAgents/net.quantumproof.keeper.plist` on macOS, `~/.config/systemd/user/qpf-keeper.service` on Linux. No admin password, no system settings.
 - The keeper only **reads** from quantumproofchain.net (`/api/points`, `/rpc`, `/qpf-node.js`). The only thing it sends is messages to your own Discord webhook.
 - It reads your validator **address** from `qpf-validator.json`. The private key is only ever used by the official `qpf-node.js`.
-- It never downloads or installs updates by itself.
-- Single file, under 200 lines: read `qpf-keeper.js` before you run it.
+- It never installs or runs updates by itself. A changed official script is only saved aside as `qpf-node.new.js` for review.
+- Single file of about 250 lines, no dependencies: read `qpf-keeper.js` before you run it.
 
 Unofficial community tool, not made by the QuantumProof team. Testnet only.
