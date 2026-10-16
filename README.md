@@ -15,6 +15,7 @@ QuantumProof's testnet resets often, and a validator that stays registered while
   - 📊 a daily report: rank, points gained in 24 h, uptime %, restarts, resets, blocks proposed and attested
   - 🗓 a weekly recap on Mondays: points per day as a mini chart, rank trend, average uptime
   - 💤 your computer went to sleep (lid closed), and for how long
+  - 🧹 leaderboard points wiped (site update or reset), with your last score before the wipe, so Discord keeps a timestamped record of every season
   - 🆕 the official `qpf-node.js` changed on the site, with a review summary: new websites it contacts, new modules, new file or shell access. The new version is saved as `~/qpf/qpf-node.new.js` for you to check; it is never run or installed automatically
 - **Tamper check.** The keeper fingerprints `qpf-node.js` and refuses to run it if it changes on your computer.
 - **Status in one command:** `node ~/qpf/qpf-keeper.js --status` shows rank, points, online state and today's uptime.
@@ -60,7 +61,7 @@ Stops the keeper, leaves the validator set cleanly so you are not penalised, and
 | `summaryHour` | `9` | Hour (local time) for the daily report |
 | `restartAfterSec` | `60` | Restart the node after this many seconds without a signature |
 | `alertAfterSec` | `180` | Send the offline alert after this long |
-| `rankAlerts`, `missAlerts`, `resetAlerts`, `updateWatch`, `sleepAlerts`, `weeklyReport` | `true` | Turn individual alerts off with `false` |
+| `rankAlerts`, `missAlerts`, `resetAlerts`, `updateWatch`, `sleepAlerts`, `weeklyReport`, `wipeAlerts` | `true` | Turn individual alerts off with `false` |
 | `maxLogMB` | `5` | Clear `node.log` above this size |
 
 After editing, restart:

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// QPF Keeper v3.2: keeps a QuantumProof testnet validator online and reports to Discord.
+// QPF Keeper v3.3: keeps a QuantumProof testnet validator online and reports to Discord.
 // It runs the official qpf-node.js, restarts it when it stops signing, and only READS from the
 // QuantumProof site. The only thing it ever sends is messages to your own Discord webhook.
 // It reads your validator ADDRESS from qpf-validator.json, never the private key.
@@ -12,7 +12,7 @@ const T = Number(process.env.KEEPER_TIME_SCALE || 1); // test hook: speeds up ev
 const DEFAULTS = {
   name: 'validator', site: 'https://quantumproofchain.net', webhookFile: 'discord-webhook.txt',
   summaryHour: 9, restartAfterSec: 60, alertAfterSec: 180,
-  rankAlerts: true, missAlerts: true, resetAlerts: true, updateWatch: true, sleepAlerts: true, weeklyReport: true,
+  rankAlerts: true, missAlerts: true, resetAlerts: true, updateWatch: true, sleepAlerts: true, weeklyReport: true, wipeAlerts: true,
   nodeSha256: null, maxLogMB: 5, logFile: 'node.log',
 };
 const readJSON = (f, fb) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return fb; } };
@@ -158,6 +158,13 @@ async function fiveMinute() {
   try {
     const b = await board(); if (!b.me) return;
     if (st.pts0 === null) { st.pts0 = b.me.total; st.rank0 = b.me.rank; st.day = new Date().toDateString(); save(); }
+    // Points wiped (site update or reset): post the last known score to Discord as a timestamped record.
+    if (cfg.wipeAlerts && st.lastPts >= 20 && b.me.total < st.lastPts / 2) {
+      const when = new Date(st.lastAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+      notify(`🧹 **Points wiped** (now ${b.me.total}).\n📌 Last record before the wipe: **#${st.lastRank} of ${st.lastN} · ${st.lastPts} points** (${when}).\nPin this message to keep it.`);
+      st.pts0 = b.me.total; st.rank0 = b.me.rank; // so the daily report doesn't show a huge negative
+    }
+    Object.assign(st, { lastPts: b.me.total, lastRank: b.me.rank, lastN: b.n, lastAt: Date.now() }); save();
     if (cfg.rankAlerts && lastRank !== null && b.me.rank !== lastRank)
       notify(`${b.me.rank < lastRank ? '📈 Up' : '📉 Down'} to **#${b.me.rank}** of ${b.n} · ${b.me.total} points\n${gapLine(b)}`);
     lastRank = b.me.rank;
@@ -231,7 +238,7 @@ process.on('SIGTERM', () => { save(); if (child) child.kill(); process.exit(0); 
 start();
 (async () => {
   try { const b = await board(); lastRank = b.me ? b.me.rank : null;
-    notify(`✅ **Keeper v3.2 started** for ${NAME}${b.me ? ` · rank #${b.me.rank} of ${b.n} · ${b.me.total} points` : ''}.`); }
-  catch { notify(`✅ **Keeper v3.2 started** for ${NAME}.`); }
+    notify(`✅ **Keeper v3.3 started** for ${NAME}${b.me ? ` · rank #${b.me.rank} of ${b.n} · ${b.me.total} points` : ''}.`); }
+  catch { notify(`✅ **Keeper v3.3 started** for ${NAME}.`); }
   setTimeout(updateWatch, 60000 / T);
 })();
